@@ -3,12 +3,18 @@ package main
 import (
 	"college-bot/handlers"
 	"log"
+	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func main() {
-	bot, err := tgbotapi.NewBotAPI("7718633477:AAFyMk-ZWflDzBjt4eRTlXo6OE_VHzoKXgE")
+	token := os.Getenv("token")
+
+	if token == "" {
+		panic("API_TOKEN environment variable is not set")
+	}
+	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Panic(err)
 	}
