@@ -18,15 +18,8 @@ func CreatMainMenu() tgbotapi.InlineKeyboardMarkup {
 func OtherMenu() tgbotapi.InlineKeyboardMarkup {
 	buttons := [][]tgbotapi.InlineKeyboardButton{
 		{tgbotapi.NewInlineKeyboardButtonData("Напоминание", "reminder")},
-		{tgbotapi.NewInlineKeyboardButtonData("Конспекты", "")},
-	}
-	return tgbotapi.NewInlineKeyboardMarkup(buttons...)
-}
-
-func CancelMenu() tgbotapi.InlineKeyboardMarkup {
-	buttons := [][]tgbotapi.InlineKeyboardButton{
-		{tgbotapi.NewInlineKeyboardButtonData("Назад", "cancel")},
-		{tgbotapi.NewInlineKeyboardButtonData("Главное меню", "mainmenu")},
+		{tgbotapi.NewInlineKeyboardButtonData("Конспекты", "conspects")},
+		{tgbotapi.NewInlineKeyboardButtonData("Назад", "cencel")},
 	}
 	return tgbotapi.NewInlineKeyboardMarkup(buttons...)
 }

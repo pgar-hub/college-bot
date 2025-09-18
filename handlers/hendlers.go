@@ -48,7 +48,7 @@ func HandleCallBackQuery(bot *tgbotapi.BotAPI, callBackQuery *tgbotapi.CallbackQ
 	data := callBackQuery.Data
 	switch data {
 	case "about":
-		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "пока нихуя нету")
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "До")
 		bot.Send(msg)
 	case "schedule":
 		a := photo.GetPhoto()
@@ -59,12 +59,26 @@ func HandleCallBackQuery(bot *tgbotapi.BotAPI, callBackQuery *tgbotapi.CallbackQ
 		msg := tgbotapi.NewPhoto(callBackQuery.Message.Chat.ID, a)
 		bot.Send(msg)
 	case "other":
-		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "пока нихуя нету")
+		keyboard := buttons.OtherMenu()
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Дополнительные функции")
+		msg.ReplyMarkup = keyboard
 		bot.Send(msg)
+	case "cencel":
+		keyboardMenu := buttons.CreatMainMenu()
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Главное меню")
+		msg.ReplyMarkup = keyboardMenu
+		bot.Send(msg)
+
+	case "reminder":
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Напоминание")
+		bot.Send(msg)
+	case "conspects":
+
 	default:
 		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Неизвестная команда. Используйте /help для получения помощи или /start для использования бота.")
 		bot.Send(msg)
 	}
+
 	callback := tgbotapi.NewCallback(callBackQuery.ID, "")
 	bot.Request(callback)
 }
