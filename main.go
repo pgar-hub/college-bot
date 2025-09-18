@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	token := os.Getenv("token")
+	token := os.Getenv("TOKEN")
 
 	if token == "" {
 		panic("API_TOKEN environment variable is not set")
