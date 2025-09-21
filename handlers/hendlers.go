@@ -2,15 +2,15 @@ package handlers
 
 import (
 	"college-bot/buttons"
-	"college-bot/photo"
+	"college-bot/database"
+	"database/sql"
 	"fmt"
-	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 // Основной обработчик обновлений(сообщение или кнопка)
-func HandleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel) {
+func HandleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel, db *sql.DB) {
 	keyboard := buttons.CreatMainMenu()
 
 	for update := range updates {
@@ -18,7 +18,7 @@ func HandleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel) {
 			HandleMessage(bot, update.Message, keyboard)
 		}
 		if update.CallbackQuery != nil {
-			HandleCallBackQuery(bot, update.CallbackQuery)
+			HandleCallBackQuery(bot, update.CallbackQuery, db)
 		}
 	}
 }
@@ -44,19 +44,22 @@ func HandleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, keyboard tgb
 }
 
 // Обработчик кнопок
-func HandleCallBackQuery(bot *tgbotapi.BotAPI, callBackQuery *tgbotapi.CallbackQuery) {
+func HandleCallBackQuery(bot *tgbotapi.BotAPI, callBackQuery *tgbotapi.CallbackQuery, db *sql.DB) {
 	data := callBackQuery.Data
 	switch data {
 	case "about":
 		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "До")
 		bot.Send(msg)
 	case "schedule":
-		a := photo.GetPhoto()
-		if a == nil {
-			log.Println("Фото не найдено")
+		day := "понедельник" // временно
+		week := "числитель"  // временно
+		scheduleText, err := database.GetSchedule(db, day, week)
+		if err != nil {
+			msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Ошибка при инициализации расписания")
+			bot.Send(msg)
 			return
 		}
-		msg := tgbotapi.NewPhoto(callBackQuery.Message.Chat.ID, a)
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, scheduleText)
 		bot.Send(msg)
 	case "other":
 		keyboard := buttons.OtherMenu()

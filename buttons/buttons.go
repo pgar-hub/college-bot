@@ -23,3 +23,15 @@ func OtherMenu() tgbotapi.InlineKeyboardMarkup {
 	}
 	return tgbotapi.NewInlineKeyboardMarkup(buttons...)
 }
+
+func ShowScheduleOptions(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery) {
+	buttons := [][]tgbotapi.InlineKeyboardButton{
+		{tgbotapi.NewInlineKeyboardButtonData("📅 Сегодня", "schedule_today")},
+		{tgbotapi.NewInlineKeyboardButtonData("📅 Завтра", "schedule_tomorrow")},
+	}
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(buttons...)
+
+	msg := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, "Выберите день:")
+	msg.ReplyMarkup = keyboard
+	bot.Send(msg)
+}
