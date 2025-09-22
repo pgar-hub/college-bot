@@ -19,19 +19,36 @@ func OtherMenu() tgbotapi.InlineKeyboardMarkup {
 	buttons := [][]tgbotapi.InlineKeyboardButton{
 		{tgbotapi.NewInlineKeyboardButtonData("Напоминание", "reminder")},
 		{tgbotapi.NewInlineKeyboardButtonData("Конспекты", "conspects")},
-		{tgbotapi.NewInlineKeyboardButtonData("Назад", "cencel")},
+		{tgbotapi.NewInlineKeyboardButtonData("Назад", "mainmenu")},
 	}
 	return tgbotapi.NewInlineKeyboardMarkup(buttons...)
 }
 
-func ShowScheduleOptions(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery) {
+func ShowScheduleOptions() tgbotapi.InlineKeyboardMarkup {
 	buttons := [][]tgbotapi.InlineKeyboardButton{
 		{tgbotapi.NewInlineKeyboardButtonData("📅 Сегодня", "schedule_today")},
 		{tgbotapi.NewInlineKeyboardButtonData("📅 Завтра", "schedule_tomorrow")},
+		{tgbotapi.NewInlineKeyboardButtonData("Назад", "mainmenu")},
 	}
 	keyboard := tgbotapi.NewInlineKeyboardMarkup(buttons...)
+	return keyboard
+}
+func CancelButtonSchedule() tgbotapi.InlineKeyboardMarkup {
+	buttons := [][]tgbotapi.InlineKeyboardButton{
+		{tgbotapi.NewInlineKeyboardButtonData("Назад", "cencelShedule")},
+	}
+	return tgbotapi.NewInlineKeyboardMarkup(buttons...)
+}
 
-	msg := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, "Выберите день:")
-	msg.ReplyMarkup = keyboard
-	bot.Send(msg)
+func CancelButtonAbout() tgbotapi.InlineKeyboardMarkup {
+	buttons := [][]tgbotapi.InlineKeyboardButton{
+		{tgbotapi.NewInlineKeyboardButtonData("Назад", "cencelAbout")},
+	}
+	return tgbotapi.NewInlineKeyboardMarkup(buttons...)
+}
+func CancelButtonReminder() tgbotapi.InlineKeyboardMarkup {
+	buttons := [][]tgbotapi.InlineKeyboardButton{
+		{tgbotapi.NewInlineKeyboardButtonData("Назад", "cencelReminder")},
+	}
+	return tgbotapi.NewInlineKeyboardMarkup(buttons...)
 }

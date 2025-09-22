@@ -23,12 +23,23 @@ func main() {
 		panic("connStr environment variable is not set")
 	}
 
-	database, err := database.ConnectDB(connStr)
+	db, err := database.ConnectDB(connStr)
 	if err != nil {
 		log.Fatal("connect:", err)
 	}
-	defer database.Close()
+	defer db.Close()
+	if err := db.Ping(); err != nil {
+		log.Fatal("Ошибка ping БД:", err)
+	}
 	log.Println("Подключение к БД успешно установлено")
+
+	// ✅ ВЫЗОВИТЕ SeedSchedule ПЕРЕД запуском бота
+	if err := database.CreateTable(db); err != nil {
+		log.Fatal("create table:", err)
+	}
+	if err := database.SeedSchedule(db); err != nil {
+		log.Fatal("seed schedule:", err)
+	}
 
 	//токен бота
 	token := os.Getenv("TOKEN")
@@ -48,5 +59,5 @@ func main() {
 	u.Timeout = 60
 	updates := bot.GetUpdatesChan(u)
 
-	handlers.HandleUpdates(bot, updates, database)
+	handlers.HandleUpdates(bot, updates, db)
 }

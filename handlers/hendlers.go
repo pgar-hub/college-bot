@@ -3,8 +3,10 @@ package handlers
 import (
 	"college-bot/buttons"
 	"college-bot/database"
+	"college-bot/dayofweek"
 	"database/sql"
 	"fmt"
+	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -48,35 +50,89 @@ func HandleCallBackQuery(bot *tgbotapi.BotAPI, callBackQuery *tgbotapi.CallbackQ
 	data := callBackQuery.Data
 	switch data {
 	case "about":
-		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "До")
+		answer := tgbotapi.NewCallback(callBackQuery.ID, "")
+		if _, err := bot.Request(answer); err != nil {
+			log.Println("Error answering callback:", err)
+		}
+		keyboard := buttons.CancelButtonAbout()
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Гуап")
+		msg.ReplyMarkup = keyboard
 		bot.Send(msg)
 	case "schedule":
-		day := "понедельник" // временно
-		week := "числитель"  // временно
-		scheduleText, err := database.GetSchedule(db, day, week)
+		keyboard := buttons.ShowScheduleOptions()
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Расписание на сегодня или на завтра?")
+		msg.ReplyMarkup = keyboard
+		bot.Send(msg)
+	case "schedule_today":
+		answer := tgbotapi.NewCallback(callBackQuery.ID, "")
+		if _, err := bot.Request(answer); err != nil {
+			log.Println("Error answering callback:", err)
+		}
+		keyboard := buttons.CancelButtonSchedule()
+		day := dayofweek.Today()
+		week := dayofweek.DayOfWeek()
+		scheduleText, err := database.GetSchedule(db, week, day)
 		if err != nil {
-			msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Ошибка при инициализации расписания")
+			msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Ошибка при инициализации расписания:"+err.Error())
 			bot.Send(msg)
 			return
 		}
 		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, scheduleText)
+		msg.ReplyMarkup = keyboard
+		bot.Send(msg)
+	case "schedule_tomorrow":
+		answer := tgbotapi.NewCallback(callBackQuery.ID, "")
+		if _, err := bot.Request(answer); err != nil {
+			log.Println("Error answering callback:", err)
+		}
+		keyboard := buttons.CancelButtonSchedule()
+		day := dayofweek.TomorrowDay()
+		week := dayofweek.DayOfWeek()
+		scheduleText, err := database.GetSchedule(db, week, day)
+		if err != nil {
+			msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Ошибка при инициализации расписания:"+err.Error())
+			bot.Send(msg)
+			return
+		}
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, scheduleText)
+		msg.ReplyMarkup = keyboard
 		bot.Send(msg)
 	case "other":
 		keyboard := buttons.OtherMenu()
 		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Дополнительные функции")
 		msg.ReplyMarkup = keyboard
 		bot.Send(msg)
-	case "cencel":
+	case "reminder":
+		keyboard := buttons.CancelButtonReminder()
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Напоминание")
+		msg.ReplyMarkup = keyboard
+		bot.Send(msg)
+	case "conspects":
+		//кнопки назад
+		//В главное меню
+	case "mainmenu":
 		keyboardMenu := buttons.CreatMainMenu()
 		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Главное меню")
 		msg.ReplyMarkup = keyboardMenu
 		bot.Send(msg)
-
-	case "reminder":
-		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Напоминание")
+		//К выбору дня расписания
+	case "cencelShedule":
+		keyboard := buttons.ShowScheduleOptions()
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Расписание на сегодня или на завтра?")
+		msg.ReplyMarkup = keyboard
 		bot.Send(msg)
-	case "conspects":
-
+		//В главное меню из информации о боте
+	case "cencelAbout":
+		keyboardMenu := buttons.CreatMainMenu()
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Главное меню")
+		msg.ReplyMarkup = keyboardMenu
+		bot.Send(msg)
+		//В главное меню из напоминания
+	case "cencelReminder":
+		keyboardMenu := buttons.CreatMainMenu()
+		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Главное меню")
+		msg.ReplyMarkup = keyboardMenu
+		bot.Send(msg)
 	default:
 		msg := tgbotapi.NewMessage(callBackQuery.Message.Chat.ID, "Неизвестная команда. Используйте /help для получения помощи или /start для использования бота.")
 		bot.Send(msg)
